@@ -54,17 +54,34 @@
     <script>
       $(function () {
         var socket = io();
+
+        let name = prompt("What is your name?");
+        $("#messages").append($("<li>").text("You joined"));
+
+        socket.emit("new_user", name);
+
+        socket.emit("list_users");
+
         $("form").submit(function (e) {
           e.preventDefault(); // prevents page reloading
-          socket.emit("chat message", $("#m").val());
+          toSend = { name: name, value: $("#m").val() };
+          socket.emit("chat_message", toSend);
           $("#m").val("");
           return false;
         });
-        socket.on("chat message", function (msg) {
-          $("#messages").append($("<li>").text(msg));
+        socket.on("user_connected", function (name) {
+          $("#messages").append($("<li>").text(`${name} joined`));
         });
-        socket.on("user_connected", function (msg) {
-          $("#messages").append($("<li>").text(msg));
+        socket.on("chat_message", function (msg) {
+          $("#messages").append($("<li>").text(`${msg.name}: ${msg.value}`));
+        });
+        socket.on("list_users", (users) => {
+          console.log(Object.values(users));
+          $("#messages").append(
+            $("<li>").text(
+              "Users connected: " + Object.values(users).toString()
+            )
+          );
         });
       });
     </script>

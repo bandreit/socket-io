@@ -2,8 +2,14 @@
   "name": "socket-io",
   "version": "0.0.1",
   "description": "my first socket.io app",
+  "scripts": {
+    "devStart": "nodemon server.js"
+  },
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
   }
 }
