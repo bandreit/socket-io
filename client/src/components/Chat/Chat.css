@@ -1,0 +1,93 @@
+.Chat-Window {
+  background-color: #0e1621;
+  min-height: 90vh;
+  color: white;
+  width: 400px;
+  margin: 30px auto;
+}
+
+.Chat-Header {
+  background-color: #0e1615;
+  height: 7vh;
+  color: white;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.Messages-Wrapper {
+  height: 537px;
+  overflow-x: scroll;
+  overflow-x: hidden;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #434543;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.Message-List {
+  font-size: 14px;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.Message-List li {
+  padding: 5px 10px 10px;
+  margin: 1px 40px;
+  border-radius: 5px;
+  max-width: 75%;
+  width: fit-content;
+  background-color: #182533;
+  display: inline-flex;
+  align-items: flex-end;
+  overflow: auto;
+}
+
+.form-wrapper {
+  height: 45px;
+  display: flex;
+  justify-content: space-around;
+  background-color: #17212b;
+  margin-top: 7px;
+  align-items: center;
+}
+
+.button-input {
+  font-size: 25px;
+  color: #5288c1;
+}
+
+.text-input {
+  height: 50%;
+  background-color: #17212b;
+  border-color: #17212b !important;
+  border-style: none;
+  color: white;
+  width: 82%;
+}
+
+.text-input:focus {
+  outline: none;
+}

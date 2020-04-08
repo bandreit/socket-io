@@ -1,0 +1,15 @@
+.sent {
+  align-self: flex-end;
+  background-color: #2b5278 !important;
+  margin: 1px 13px !important;
+}
+
+.first {
+  margin-top: 5px !important;
+}
+
+.time {
+  margin-left: 10px;
+  margin-bottom: -5px;
+  opacity: 60%;
+}

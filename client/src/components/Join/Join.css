@@ -1,0 +1,28 @@
+.container {
+  background: #5682a3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 5px;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+}
+
+.input {
+  border: none;
+  border-bottom: 1px solid grey;
+  margin-top: 10px;
+}
+
+.input:focus {
+  outline: none;
+}
