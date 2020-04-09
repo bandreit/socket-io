@@ -13,3 +13,12 @@
   margin-bottom: -5px;
   opacity: 60%;
 }
+
+.notification {
+  padding: 1px 15px 3px;
+  margin: 7px auto;
+  border-radius: 20px;
+  max-width: 75%;
+  background-color: #182533;
+  font-weight: 500;
+}

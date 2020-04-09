@@ -22,7 +22,11 @@ const Chat = (props) => {
     setName(name);
     setRoom(room);
 
-    socket.emit("new_user", { name, room }, () => {});
+    socket.emit("new_user", { name, room }, (error) => {
+      if (error) {
+        alert(error);
+      }
+    });
 
     return () => {
       socket.emit("disconnect");
@@ -32,14 +36,10 @@ const Chat = (props) => {
   }, [ENDPOINT, props.location.state]);
 
   useEffect(() => {
-    socket.on(
-      "message",
-      (message) => {
-        setMessages([...messages, message]);
-      },
-      [messages]
-    );
-  });
+    socket.on("message", (message) => {
+      setMessages((messages) => [...messages, message]);
+    });
+  }, []);
 
   const sendMessage = (event) => {
     event.preventDefault();
@@ -66,13 +66,6 @@ const Chat = (props) => {
                 {message.text}
               </Message>
             ))}
-            {/* <li className="received">
-              un mesaj mesaj pfeafe faeafa aaote cea mai lung mesaj paote cea
-              mai lung mesaj paote cea mai lung mesaj afefea fe paote cea mai
-              lung paote cea mai lungfeffefefefee
-              <div className="time">10:10</div>
-            </li>
-            */}
           </ul>
         </div>
         <div className="form-wrapper">
