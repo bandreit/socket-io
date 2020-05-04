@@ -5,12 +5,12 @@ import { IoMdSend } from "react-icons/io";
 import "./Chat.css";
 
 let socket;
+let player;
 
 const Chat = (props) => {
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
   const [message, setMessage] = useState("");
-  //   const [infoMessage, setInfoMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const ENDPOINT = "localhost:5000";
 
@@ -18,7 +18,6 @@ const Chat = (props) => {
     const { name, room } = props.location.state;
 
     socket = io(ENDPOINT);
-
     setName(name);
     setRoom(room);
 
@@ -28,35 +27,121 @@ const Chat = (props) => {
       }
     });
 
+    socket.on("message", (message) => {
+      setMessages((messages) => [...messages, message]);
+    });
+
     return () => {
       socket.emit("disconnect");
-
       socket.off();
     };
   }, [ENDPOINT, props.location.state]);
 
   useEffect(() => {
-    socket.on("message", (message) => {
-      setMessages((messages) => [...messages, message]);
+    socket.on("pauseVideo", () => {
+      if (player.getPlayerState) {
+        let videoStatus = player.getPlayerState();
+        console.log("STOP");
+        if (videoStatus !== 2) player.pauseVideo();
+      }
+      // player.pauseVideo();
+    });
+    socket.on("playVideo", (currentTime) => {
+      if (player.getPlayerState) {
+        let videoStatus = player.getPlayerState();
+        console.log("PLAY ", currentTime);
+        if (videoStatus === 2 || videoStatus === -1 || videoStatus === 1) {
+          player.seekTo(currentTime, true);
+          player.playVideo();
+        }
+      }
+      // player.playVideo();
     });
   }, []);
 
   const sendMessage = (event) => {
     event.preventDefault();
 
+    // player.pauseVideo();
+    // pauseVideo();
+    console.log(player);
+
     if (message) {
       socket.emit("sendMessage", message, () => setMessage(""));
     }
   };
 
-  console.log(message, messages);
+  const onPlayerReady = (event) => {
+    event.target.playVideo();
+  };
+
+  const onPlayerStateChange = (event) => {
+    // if (!player.getPlayerState) return;
+    let playerState = event.data;
+    if (playerState === 2) {
+      console.log("paused");
+      pauseVideo();
+    }
+    if (playerState === 1 || playerState === 3) {
+      if (event.target.getCurrentTime) playVideo(event.target.getCurrentTime());
+    }
+    if (playerState === -1) console.log("unstarted");
+  };
+
+  const loadPlayer = () => {
+    if (!window.YT.Player) {
+      console.log("does not exist");
+    } else {
+      console.log("apelat ampulea");
+      player = new window.YT.Player(`player`, {
+        videoId: "JNhiy0sTl5M",
+        playerVars: {
+          controls: 1,
+          loop: 1,
+          mute: 1,
+        },
+        events: {
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange,
+        },
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!window.YT) {
+      // If not, load the script asynchronously
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      // onYouTubeIframeAPIReady will load the video after the script is loaded
+      window.onYouTubeIframeAPIReady = loadPlayer;
+      const firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    } else {
+      loadPlayer();
+      console.log("WHAT THE FUCK");
+    }
+    // the Player object is created uniquely based on the id in props
+  });
+
+  const pauseVideo = () => {
+    // player.pauseVideo();
+    socket.emit("pauseVideo");
+  };
+
+  const playVideo = (time) => {
+    // player.playVideo();
+    console.log("hop");
+    socket.emit("playVideo", time);
+  };
 
   return (
-    <div>
+    <div className="full-container">
+      <div id="player"></div>
       <div className="Chat-Window">
         <div className="Chat-Header">
           <div>Group Logo</div>
-          <div>Group Name</div>
+          <div>Room {room}</div>
           <div>Group Info</div>
         </div>
         <div className="Messages-Wrapper">

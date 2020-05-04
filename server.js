@@ -54,6 +54,14 @@ io.on("connection", (socket) => {
       });
     }
   });
+
+  socket.on("pauseVideo", () => {
+    socket.broadcast.emit("pauseVideo");
+  });
+
+  socket.on("playVideo", (currentTime) => {
+    socket.broadcast.emit("playVideo", currentTime);
+  });
 });
 
 http.listen(PORT, () => {
