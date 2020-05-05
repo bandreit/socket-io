@@ -59,8 +59,13 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("pauseVideo");
   });
 
+  socket.on("playVideoWithTime", (currentTime) => {
+    console.log(currentTime);
+    socket.broadcast.emit("playVideoWithTime", currentTime);
+  });
+
   socket.on("playVideo", (currentTime) => {
-    socket.broadcast.emit("playVideo", currentTime);
+    socket.broadcast.emit("playVideo");
   });
 });
 
