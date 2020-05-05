@@ -1,3 +1,5 @@
+var express = require("express");
+var path = require("path");
 var app = require("express")();
 var http = require("http").createServer(app);
 var io = require("socket.io")(http);
@@ -6,8 +8,10 @@ const { addUser, removeUser, getUser, getUsersInRoom } = require("./users.js");
 
 const PORT = process.env.PORT || 5000;
 
-app.get("/", (req, res) => {
-  res.send("server is up and running");
+app.use(express.static(path.join(__dirname, "build")));
+
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 const users = {};

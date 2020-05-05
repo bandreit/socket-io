@@ -12,7 +12,7 @@ const Chat = (props) => {
   const [room, setRoom] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const ENDPOINT = "localhost:5000";
+  const ENDPOINT = "/";
 
   useEffect(() => {
     const { name, room } = props.location.state;
