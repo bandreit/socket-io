@@ -44,14 +44,25 @@ const Chat = (props) => {
         console.log("STOP");
         if (videoStatus !== 2) player.pauseVideo();
       }
-      // player.pauseVideo();
     });
-    socket.on("playVideo", (currentTime) => {
+    socket.on("playVideoWithTime", (currentTime) => {
+      console.log("PLAY ", currentTime);
       if (player.getPlayerState) {
         let videoStatus = player.getPlayerState();
-        console.log("PLAY ", currentTime);
+        console.log("PLAY INSIDE");
         if (videoStatus === 2 || videoStatus === -1 || videoStatus === 1) {
           player.seekTo(currentTime, true);
+          player.playVideo();
+        }
+      }
+      // player.playVideo();
+    });
+    socket.on("playVideo", () => {
+      console.log("PLAY NO TIME");
+      if (player.getPlayerState) {
+        let videoStatus = player.getPlayerState();
+        console.log("PLAY INSIDE");
+        if (videoStatus === 2 || videoStatus === -1 || videoStatus === 1) {
           player.playVideo();
         }
       }
@@ -64,7 +75,7 @@ const Chat = (props) => {
 
     // player.pauseVideo();
     // pauseVideo();
-    console.log(player);
+    // console.log(player);
 
     if (message) {
       socket.emit("sendMessage", message, () => setMessage(""));
@@ -76,14 +87,19 @@ const Chat = (props) => {
   };
 
   const onPlayerStateChange = (event) => {
-    // if (!player.getPlayerState) return;
+    if (name !== "controller") return;
     let playerState = event.data;
     if (playerState === 2) {
       console.log("paused");
       pauseVideo();
     }
     if (playerState === 1 || playerState === 3) {
-      if (event.target.getCurrentTime) playVideo(event.target.getCurrentTime());
+      if (event.target.getCurrentTime) {
+        playVideoWithTime(event.target.getCurrentTime());
+      } else {
+        playVideo();
+      }
+      console.log("played");
     }
     if (playerState === -1) console.log("unstarted");
   };
@@ -125,14 +141,15 @@ const Chat = (props) => {
   });
 
   const pauseVideo = () => {
-    // player.pauseVideo();
     socket.emit("pauseVideo");
   };
 
-  const playVideo = (time) => {
-    // player.playVideo();
-    console.log("hop");
-    socket.emit("playVideo", time);
+  const playVideoWithTime = (time) => {
+    socket.emit("playVideoWithTime", time);
+  };
+
+  const playVideo = () => {
+    socket.emit("playVideo");
   };
 
   return (
