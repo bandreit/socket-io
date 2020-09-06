@@ -28,7 +28,7 @@ const Join = () => {
         ></input>{" "}
         <Link
           to={{
-            pathname: "/chat",
+            pathname: `/chat/${room}`,
             state: { name: name, room: room },
           }}
           onClick={(event) => (!name || !room ? event.preventDefault() : null)}

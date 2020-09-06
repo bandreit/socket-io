@@ -7,10 +7,13 @@ import "./App.css";
 
 function App() {
   return (
-    <Router>
-      <Route path="/" exact component={Join}></Route>
-      <Route path="/chat" component={Chat}></Route>
-    </Router>
+    <>
+      {/* <Header>aaaa</Header> */}
+      <Router>
+        <Route path="/" exact component={Join}></Route>
+        <Route path="/chat" component={Chat}></Route>
+      </Router>
+    </>
   );
 }
 

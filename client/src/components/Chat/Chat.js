@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import io from "socket.io-client";
 import Message from "./components/Message/Message";
 import { IoMdSend } from "react-icons/io";
 import "./Chat.css";
+import GroupIcon from "@material-ui/icons/Group";
+import InfoIcon from "@material-ui/icons/Info";
+import TextField from "@material-ui/core/TextField";
 
 let socket;
 let player;
@@ -12,6 +15,7 @@ const Chat = (props) => {
   const [room, setRoom] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [videoId, setVideoId] = useState("YouTube Video ID");
   const ENDPOINT = "localhost:5000";
 
   useEffect(() => {
@@ -41,104 +45,105 @@ const Chat = (props) => {
     socket.on("pauseVideo", () => {
       if (player.getPlayerState) {
         let videoStatus = player.getPlayerState();
-        console.log("STOP");
         if (videoStatus !== 2) player.pauseVideo();
       }
     });
+
     socket.on("playVideoWithTime", (currentTime) => {
-      console.log("PLAY ", currentTime);
       if (player.getPlayerState) {
         let videoStatus = player.getPlayerState();
-        console.log("PLAY INSIDE");
-        if (videoStatus === 2 || videoStatus === -1 || videoStatus === 1) {
+        if (
+          videoStatus === 2 ||
+          videoStatus === -1 ||
+          videoStatus === 1 ||
+          videoStatus === 5
+        ) {
+          player.playVideo();
           player.seekTo(currentTime, true);
-          player.playVideo();
         }
       }
-      // player.playVideo();
     });
+
     socket.on("playVideo", () => {
-      console.log("PLAY NO TIME");
       if (player.getPlayerState) {
         let videoStatus = player.getPlayerState();
-        console.log("PLAY INSIDE");
         if (videoStatus === 2 || videoStatus === -1 || videoStatus === 1) {
           player.playVideo();
         }
       }
-      // player.playVideo();
+    });
+
+    socket.on("loadVideoById", (videoId) => {
+      if (player && player.hasOwnProperty("loadVideoById"))
+        player.loadVideoById(videoId, 0);
     });
   }, []);
 
   const sendMessage = (event) => {
     event.preventDefault();
-
-    // player.pauseVideo();
-    // pauseVideo();
-    // console.log(player);
-
     if (message) {
       socket.emit("sendMessage", message, () => setMessage(""));
     }
   };
 
-  const onPlayerReady = (event) => {
-    event.target.playVideo();
-  };
+  useLayoutEffect(() => {
+    const onPlayerReady = (event) => {
+      // event.target.playVideo();
+    };
 
-  const onPlayerStateChange = (event) => {
-    if (name !== "controller") return;
-    let playerState = event.data;
-    if (playerState === 2) {
-      console.log("paused");
-      pauseVideo();
-    }
-    if (playerState === 1 || playerState === 3) {
-      if (event.target.getCurrentTime) {
-        playVideoWithTime(event.target.getCurrentTime());
-      } else {
-        playVideo();
+    const onPlayerStateChange = (event) => {
+      if (name !== "controller") return;
+      let playerState = event.data;
+      if (playerState === 2) {
+        pauseVideo();
       }
-      console.log("played");
-    }
-    if (playerState === -1) console.log("unstarted");
-  };
+      if (playerState === 1 || playerState === 3) {
+        if (event.target.getCurrentTime) {
+          playVideoWithTime(event.target.getCurrentTime());
+        } else {
+          playVideo();
+        }
+      }
+    };
 
-  const loadPlayer = () => {
-    if (!window.YT.Player) {
-      console.log("does not exist");
-    } else {
-      console.log("apelat ampulea");
-      player = new window.YT.Player(`player`, {
-        videoId: "JNhiy0sTl5M",
-        playerVars: {
-          controls: 1,
-          loop: 1,
-          mute: 1,
-        },
-        events: {
-          onReady: onPlayerReady,
-          onStateChange: onPlayerStateChange,
-        },
-      });
-    }
-  };
+    const loadPlayer = () => {
+      if (!window.YT.Player) {
+      } else {
+        player = new window.YT.Player(`player`, {
+          videoId: "Md0RjxyoYyU",
+          playerVars: {
+            controls: 1,
+            loop: 1,
+            mute: 1,
+          },
+          host: "https://www.youtube.com",
+          events: {
+            onReady: onPlayerReady,
+            onStateChange: onPlayerStateChange,
+          },
+        });
+      }
+    };
 
-  useEffect(() => {
     if (!window.YT) {
-      // If not, load the script asynchronously
       const tag = document.createElement("script");
       tag.src = "https://www.youtube.com/iframe_api";
-      // onYouTubeIframeAPIReady will load the video after the script is loaded
       window.onYouTubeIframeAPIReady = loadPlayer;
       const firstScriptTag = document.getElementsByTagName("script")[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     } else {
       loadPlayer();
-      console.log("WHAT THE FUCK");
     }
-    // the Player object is created uniquely based on the id in props
-  });
+  }, [name]);
+
+  const changeVideoID = (event) => {
+    event.preventDefault();
+    if (name === "controller") {
+      socket.emit("loadVideoById", videoId);
+      if (player && player.hasOwnProperty("loadVideoById"))
+        player.loadVideoById(videoId, 0);
+    }
+  };
 
   const pauseVideo = () => {
     socket.emit("pauseVideo");
@@ -154,12 +159,27 @@ const Chat = (props) => {
 
   return (
     <div className="full-container">
-      <div id="player"></div>
+      <div className="form-video-wrapper">
+        <div className="videoWrapper">
+          <div id="player"></div>
+        </div>
+        <div className="video-id-button">
+          <form onSubmit={changeVideoID}>
+            <input
+              value={videoId}
+              onChange={(event) => setVideoId(event.target.value)}
+              type="text"
+              placeholder="Video ID..."
+            ></input>
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      </div>
       <div className="Chat-Window">
         <div className="Chat-Header">
-          <div>Group Logo</div>
+          <GroupIcon fontSize="large" />
           <div>Room {room}</div>
-          <div>Group Info</div>
+          <InfoIcon fontSize="large" />
         </div>
         <div className="Messages-Wrapper">
           <ul className="Message-List">
@@ -171,7 +191,7 @@ const Chat = (props) => {
           </ul>
         </div>
         <div className="form-wrapper">
-          <input
+          <textarea
             value={message}
             onChange={(event) => setMessage(event.target.value)}
             onKeyPress={(event) =>
@@ -180,7 +200,7 @@ const Chat = (props) => {
             type="text"
             className="text-input"
             placeholder="Write a message..."
-          ></input>
+          ></textarea>
           <IoMdSend className="button-input" />
         </div>
       </div>
