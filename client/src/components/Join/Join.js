@@ -32,6 +32,7 @@ const Join = () => {
             state: { name: name, room: room },
           }}
           onClick={(event) => (!name || !room ? event.preventDefault() : null)}
+          className="button"
         >
           <button type="submit">Enter</button>
         </Link>

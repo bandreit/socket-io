@@ -6,6 +6,8 @@ import "./Chat.css";
 import GroupIcon from "@material-ui/icons/Group";
 import InfoIcon from "@material-ui/icons/Info";
 import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import Modal from "@material-ui/core/Modal";
 
 let socket;
 let player;
@@ -13,7 +15,9 @@ let player;
 const Chat = (props) => {
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
+  const [users, setUsers] = useState([]);
   const [message, setMessage] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [videoId, setVideoId] = useState("YouTube Video ID");
   const ENDPOINT = "localhost:5000";
@@ -76,6 +80,11 @@ const Chat = (props) => {
     socket.on("loadVideoById", (videoId) => {
       if (player && player.hasOwnProperty("loadVideoById"))
         player.loadVideoById(videoId, 0);
+    });
+
+    socket.on("roomData", (data) => {
+      // console.log();
+      setUsers(data.users.map((x) => x.name));
     });
   }, []);
 
@@ -157,6 +166,14 @@ const Chat = (props) => {
     socket.emit("playVideo");
   };
 
+  const handleOpen = () => {
+    setModalOpen(true);
+  };
+
+  const handleClose = () => {
+    setModalOpen(false);
+  };
+
   return (
     <div className="full-container">
       <div className="form-video-wrapper">
@@ -165,21 +182,51 @@ const Chat = (props) => {
         </div>
         <div className="video-id-button">
           <form onSubmit={changeVideoID}>
-            <input
+            <TextField
               value={videoId}
               onChange={(event) => setVideoId(event.target.value)}
               type="text"
               placeholder="Video ID..."
-            ></input>
-            <button type="submit">Submit</button>
+            ></TextField>
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              style={{ marginLeft: 30 }}
+            >
+              Change It
+            </Button>
           </form>
         </div>
       </div>
       <div className="Chat-Window">
         <div className="Chat-Header">
-          <GroupIcon fontSize="large" />
+          <div>
+            <GroupIcon fontSize="large" />
+            {users.length}
+          </div>
           <div>Room {room}</div>
-          <InfoIcon fontSize="large" />
+          <InfoIcon fontSize="large" onClick={handleOpen} />
+          <Modal
+            open={modalOpen}
+            onClose={handleClose}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+            className="modal"
+          >
+            <div className="inside-modal">
+              <h2>Online users:</h2>
+              <div>
+                {users.map((user) => {
+                  return (
+                    <h4 style={{ padding: 10 }} key={user}>
+                      {user}
+                    </h4>
+                  );
+                })}
+              </div>
+            </div>
+          </Modal>
         </div>
         <div className="Messages-Wrapper">
           <ul className="Message-List">
