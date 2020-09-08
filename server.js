@@ -25,13 +25,21 @@ io.on("connection", (socket) => {
     socket.emit("message", {
       user: "admin",
       text: `${user.name}, welcome to the room ${user.room}`,
+      new_user: user.name,
     });
 
-    socket.broadcast
-      .to(user.room)
-      .emit("message", { user: "admin", text: `${user.name} has joined` });
+    socket.broadcast.to(user.room).emit("message", {
+      user: "admin",
+      text: `${user.name} has joined`,
+      new_user: user.name,
+    });
 
     socket.join(user.room);
+
+    io.to(user.room).emit("roomData", {
+      room: user.room,
+      users: getUsersInRoom(user.room),
+    });
 
     callback();
   });
@@ -60,16 +68,29 @@ io.on("connection", (socket) => {
   });
 
   socket.on("pauseVideo", () => {
-    socket.broadcast.emit("pauseVideo");
+    let room = Object.keys(socket.rooms)[0];
+    socket.to(room).emit("pauseVideo");
   });
 
   socket.on("playVideoWithTime", (currentTime) => {
-    console.log(currentTime);
-    socket.broadcast.emit("playVideoWithTime", currentTime);
+    let room = Object.keys(socket.rooms)[0];
+    socket.to(room).emit("playVideoWithTime", currentTime);
   });
 
   socket.on("playVideo", (currentTime) => {
-    socket.broadcast.emit("playVideo");
+    let room = Object.keys(socket.rooms)[0];
+    socket.to(room).emit("playVideo");
+  });
+
+  socket.on("loadVideoById", (videoId) => {
+    let room = Object.keys(socket.rooms)[0];
+    socket.to(room).emit("loadVideoById", videoId);
+  });
+
+  socket.on("tookControll", () => {
+    let room = Object.keys(socket.rooms)[0];
+    console.log(room);
+    socket.to(room).emit("tookControll");
   });
 });
 
