@@ -9,7 +9,10 @@ const Message = ({ message: { user, text }, name }) => {
   ) : user === "admin" ? (
     <div className="notification">{text}</div>
   ) : (
-    <li>{text}</li>
+    <li className="received">
+      <span style={{ color: "red" }}>{name}</span>
+      <span>{text}</span>
+    </li>
   );
 };
 
