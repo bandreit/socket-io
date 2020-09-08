@@ -19,12 +19,8 @@ const Chat = (props) => {
   const [message, setMessage] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [messages, setMessages] = useState([]);
-<<<<<<< HEAD
-  const ENDPOINT = "/";
-=======
   const [videoId, setVideoId] = useState("YouTube Video ID");
   const ENDPOINT = "localhost:5000";
->>>>>>> socket-debug
 
   useEffect(() => {
     const { name, room } = props.location.state;
