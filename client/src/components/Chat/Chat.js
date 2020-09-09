@@ -20,7 +20,7 @@ const Chat = (props) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [videoId, setVideoId] = useState("YouTube Video ID");
-  const ENDPOINT = "http://localhost:5000/";
+  const ENDPOINT = "/";
 
   useEffect(() => {
     const { name, room } = props.location.state;
