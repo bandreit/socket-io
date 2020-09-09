@@ -10,7 +10,7 @@ const Message = ({ message: { user, text }, name }) => {
     <div className="notification">{text}</div>
   ) : (
     <li className="received">
-      <span style={{ color: "red" }}>{name}</span>
+      <span style={{ color: "red" }}>{user}</span>
       <span>{text}</span>
     </li>
   );

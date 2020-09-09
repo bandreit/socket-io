@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import io from "socket.io-client";
 import Message from "./components/Message/Message";
 import { IoMdSend } from "react-icons/io";
@@ -20,7 +20,7 @@ const Chat = (props) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [videoId, setVideoId] = useState("YouTube Video ID");
-  const ENDPOINT = "/";
+  const ENDPOINT = "http://localhost:5000/";
 
   useEffect(() => {
     const { name, room } = props.location.state;
@@ -174,6 +174,14 @@ const Chat = (props) => {
     setModalOpen(false);
   };
 
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(scrollToBottom, [messages]);
+
   return (
     <div className="full-container">
       <div className="form-video-wrapper">
@@ -236,6 +244,7 @@ const Chat = (props) => {
               </Message>
             ))}
           </ul>
+          <div ref={messagesEndRef} />
         </div>
         <div className="form-wrapper">
           <textarea
@@ -248,7 +257,10 @@ const Chat = (props) => {
             className="text-input"
             placeholder="Write a message..."
           ></textarea>
-          <IoMdSend className="button-input" />
+          <IoMdSend
+            className="button-input"
+            onClick={(event) => sendMessage(event)}
+          />
         </div>
       </div>
     </div>
