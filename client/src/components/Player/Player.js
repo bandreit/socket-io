@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import io from "socket.io-client";
-import Message from "./components/Message/Message";
+import Message from "../Chat/components/Message/Message";
 import { IoMdSend } from "react-icons/io";
-import "./Chat.css";
+import "./Player.css";
 import GroupIcon from "@material-ui/icons/Group";
 import InfoIcon from "@material-ui/icons/Info";
 import TextField from "@material-ui/core/TextField";
@@ -12,19 +12,18 @@ import Modal from "@material-ui/core/Modal";
 let socket;
 let player;
 
-const Chat = (props) => {
+const Player = (props) => {
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
   const [users, setUsers] = useState([]);
   const [message, setMessage] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [videoId, setVideoId] = useState("YouTube Video ID");
-  const ENDPOINT = "/";
+  const [videoId, setVideoId] = useState("");
+  const ENDPOINT = "http://localhost:5000/";
 
   useEffect(() => {
-    const { name, room } = props.location.state;
-
+    const { name, room } = props.location.state || {};
     socket = io(ENDPOINT);
     setName(name);
     setRoom(room);
@@ -83,7 +82,6 @@ const Chat = (props) => {
     });
 
     socket.on("roomData", (data) => {
-      // console.log();
       setUsers(data.users.map((x) => x.name));
     });
   }, []);
@@ -194,15 +192,17 @@ const Chat = (props) => {
               value={videoId}
               onChange={(event) => setVideoId(event.target.value)}
               type="text"
+              size="medium"
               placeholder="Video ID..."
             ></TextField>
             <Button
               variant="contained"
               color="primary"
+              size="large"
               type="submit"
               style={{ marginLeft: 30 }}
             >
-              Change It
+              Change the video
             </Button>
           </form>
         </div>
@@ -267,4 +267,4 @@ const Chat = (props) => {
   );
 };
 
-export default Chat;
+export default Player;

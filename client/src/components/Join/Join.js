@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import Box from "@material-ui/core/Box";
 
 import "./Join.css";
 
@@ -10,31 +13,42 @@ const Join = () => {
   return (
     <div className="container">
       <form className="wrapper">
-        <input
+        <TextField
           className="input"
-          placeholder="Name"
+          label="Name"
+          variant="outlined"
           type="text"
           onChange={(event) => {
             setName(event.target.value);
           }}
-        ></input>{" "}
-        <input
+        ></TextField>
+        <Box m={1} />
+        <TextField
           className="input"
-          placeholder="Room"
+          label="Room"
+          variant="outlined"
           type="text"
           onChange={(event) => {
             setRoom(event.target.value);
           }}
-        ></input>{" "}
+        ></TextField>{" "}
+        <Box m={1} />
         <Link
           to={{
-            pathname: `/chat/${room}`,
+            pathname: `/room/${room}`,
             state: { name: name, room: room },
           }}
           onClick={(event) => (!name || !room ? event.preventDefault() : null)}
           className="button"
         >
-          <button type="submit">Enter</button>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            type="submit"
+          >
+            Enter
+          </Button>
         </Link>
       </form>
     </div>

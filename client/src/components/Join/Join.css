@@ -16,17 +16,12 @@
   justify-content: center;
   width: 200px;
   height: 200px;
+  padding: 70px;
 }
 
 .button {
   margin-top: 10px;
-}
-
-.input {
-  margin-top: 10px;
-  border: none;
-  border-bottom: 1px solid grey;
-  margin-top: 10px;
+  text-decoration: none;
 }
 
 .input:focus {
